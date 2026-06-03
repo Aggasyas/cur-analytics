@@ -37,16 +37,22 @@ def build_site(xlsx_path, site_dir="docs", history_path=None):
 
     res = cur_periods.build_periods(xlsx_path)
     by_day = res["by_day"]
-    anchor = res["anchor"]
+    anchor = res["anchor"]               # «вчера» (сегодня − 1)
     source = res["source"]
     file = res["file"]
 
-    # дневная история из накопительного файла (для стрелок, среднего, индекса)
-    history = cur_periods.daily_history(by_day, source, file)
+    # ВАЖНО: отчёт строим ТОЛЬКО по дням <= anchor (до вчера включительно).
+    # Сегодняшние (или более поздние) записи из файла исключаем из
+    # истории, архива и индекса — в файле они остаются, но не публикуются.
+    days_pub = [d for d in res["days"] if cur_periods._d(d) <= anchor]
 
-    # --- страницы сводки дня для ВСЕХ дней (полный кликабельный архив) ---
+    # дневная история (для стрелок, среднего, индекса) — только дни <= anchor
+    by_day_pub = {d: by_day[d] for d in days_pub}
+    history = cur_periods.daily_history(by_day_pub, source, file)
+
+    # --- страницы сводки дня для ВСЕХ опубликованных дней (до вчера) ---
     written_days = 0
-    for dkey in res["days"]:
+    for dkey in days_pub:
         d = cur_periods._d(dkey)
         day_data = cur_periods.metrics_for_range(by_day, d, d, dkey, source, file)
         html = render_cur.build(day_data, history=history, analytics_date=anchor)
