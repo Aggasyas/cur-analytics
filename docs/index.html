@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Аналитика ЦУР · архив</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#1a2230;--muted:#6b7686;--line:#e3e8ef;
+--brand:#15507a;--brand-soft:#e8f1f8;--red:#c0392b;--green:#1f7a4d;--amber:#c77700}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;font-size:15px;line-height:1.55}
+.wrap{max-width:1000px;margin:0 auto;padding:20px 16px 64px}
+header.doc{background:linear-gradient(135deg,#15507a,#1d6ea3);color:#fff;border-radius:14px;padding:22px 26px;box-shadow:0 6px 20px rgba(21,80,122,.2)}
+header.doc h1{margin:0 0 4px;font-size:23px}
+header.doc .sub{opacity:.92;font-size:14px}
+.row{background:var(--card);border:1px solid var(--line);border-radius:14px;
+padding:16px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.row.latest{border-color:#bcd6ec;box-shadow:0 0 0 2px var(--brand-soft)}
+.dt{min-width:185px}
+.dt .d{font-size:16px;font-weight:700}
+.dt .w{font-size:12.5px;color:var(--muted);text-transform:capitalize}
+.vd{font-size:12px;font-weight:700;padding:3px 11px;border-radius:20px;white-space:nowrap}
+.vd.bad{background:#fdeeec;color:var(--red)}
+.vd.good{background:#e9f7ef;color:var(--green)}
+.vd.neutral{background:var(--brand-soft);color:var(--brand)}
+.nums{display:flex;gap:18px;flex:1;flex-wrap:wrap}
+.nums .n{font-size:13px;color:var(--muted)}
+.nums .n b{color:var(--ink);font-size:15px}
+.nums .n.urg b{color:var(--red)}
+.links{display:flex;gap:8px;margin-left:auto}
+.links a{font-size:13px;font-weight:600;text-decoration:none;padding:7px 13px;border-radius:9px;border:1px solid var(--line);color:var(--brand);background:var(--card);white-space:nowrap}
+.links a.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.links a:hover{background:#dbe7f7}
+.links a.primary:hover{background:var(--brand)}
+.foot{text-align:center;color:#9aa4b2;font-size:12px;margin-top:24px}
+@media(max-width:680px){.links{margin-left:0;width:100%}.dt{min-width:auto}}
+/* Навигация год → месяц → дни */
+.tree{margin-top:18px;display:flex;flex-direction:column;gap:12px}
+details.yr{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+details.yr>summary{list-style:none;cursor:pointer;padding:14px 18px;
+  font-size:18px;font-weight:800;color:var(--brand);display:flex;align-items:center;gap:10px;
+  background:var(--brand-soft)}
+details.yr>summary::-webkit-details-marker{display:none}
+.caret{display:inline-block;width:9px;height:9px;border-right:2px solid currentColor;
+  border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .15s ease;flex:0 0 auto;margin-top:-2px}
+details[open]>summary .caret{transform:rotate(45deg);margin-top:-4px}
+.yr .cnt{font-size:13px;font-weight:600;color:var(--muted);margin-left:auto}
+.months{padding:8px 12px 14px;display:flex;flex-direction:column;gap:8px}
+details.mo{border:1px solid var(--line);border-radius:11px;overflow:hidden}
+details.mo>summary{list-style:none;cursor:pointer;padding:11px 15px;font-size:15px;font-weight:700;
+  color:var(--ink);display:flex;align-items:center;gap:9px;background:#fafbfd}
+details.mo>summary::-webkit-details-marker{display:none}
+.mo .cnt{font-size:12.5px;font-weight:600;color:var(--muted);margin-left:auto}
+.mo .list{margin:0;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+</style></head><body><div class="wrap">
+<header class="doc">
+<h1>Аналитика обращений ЦУР · архив</h1>
+<div class="sub">Центр управления регионом · г.о. Солнечногорск · всего дней в архиве: 1</div>
+</header>
+<div class="tree">
+<details class="yr" open><summary><span class="caret"></span>2026 год<span class="cnt">1 дн.</span></summary>
+<div class="months">
+<details class="mo" open><summary><span class="caret"></span>Июнь<span class="cnt">1 дн.</span></summary>
+<div class="list">
+<div class="row latest">
+<div class="dt"><div class="d">2 июня 2026</div><div class="w">вторник</div></div>
+<div class="vd neutral">первый день</div>
+<div class="nums">
+<span class="n">Всего <b>164</b></span>
+<span class="n">Проблем <b>139</b></span>
+<span class="n urg">Аварий/инц. <b>35</b></span>
+<span class="n">В админ. <b>99</b></span>
+</div>
+<div class="links">
+<a class="primary" href="cur-2026-06-02.html">Сводка</a>
+<a href="analytics-2026-06-02.html">Аналитика</a>
+</div>
+</div>
+</div></details>
+</div></details>
+</div>
+<p class="foot">Архив формируется автоматически из ежедневных выгрузок тепловой карты ЦУР.</p>
+</div></body></html>
