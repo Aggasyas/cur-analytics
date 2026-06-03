@@ -142,8 +142,14 @@ def daily_history(by_day, source, file, last_n=None):
     return hist
 
 
-def build_periods(xlsx_path):
+def build_periods(xlsx_path, anchor_date=None):
     """Читает накопительный файл и возвращает всё для рендера:
+
+    ОТЧЁТНЫЙ ДЕНЬ (anchor) = «вчера» = сегодня минус 1 день
+    (по календарю, по дате запуска сборки). Сегодняшние записи,
+    если они уже есть в файле, ВО ВКЛАДКУ «сегодня» НЕ попадают.
+    anchor_date можно передать явно (datetime.date или 'YYYY-MM-DD').
+
     {
       'anchor': 'YYYY-MM-DD',   # вчера
       'prev_day': 'YYYY-MM-DD', # позавчера
@@ -163,7 +169,11 @@ def build_periods(xlsx_path):
     if not by_day:
         raise ValueError("В файле не найдено обращений с распознанной датой.")
     days = sorted(by_day.keys())
-    anchor = _d(days[-1])
+    # Отчётный день = «вчера» (сегодня − 1), или явно переданная дата.
+    if anchor_date is not None:
+        anchor = anchor_date if isinstance(anchor_date, dt.date) else _d(anchor_date)
+    else:
+        anchor = dt.date.today() - dt.timedelta(days=1)
     file = __import__("os").path.basename(xlsx_path)
     source = "Тепловая карта ЦУР (накопительная выгрузка)"
 
