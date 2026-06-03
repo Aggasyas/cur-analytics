@@ -1,0 +1,20 @@
+[Unit]
+Description=MAX-бот аналитики ЦУР (мессенджер MAX)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Пользователь и пути под ваш сервер (см. INSTRUKCIYA_MAX.md)
+User=cur
+WorkingDirectory=/opt/cur-analytics
+EnvironmentFile=/opt/cur-analytics/bot/.env.max
+ExecStart=/opt/cur-analytics/venv/bin/python /opt/cur-analytics/bot/cur_max_bot.py
+Restart=always
+RestartSec=5
+# Чуть подробнее логи в journal
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
