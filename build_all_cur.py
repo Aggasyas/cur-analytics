@@ -44,7 +44,8 @@ def build_site(xlsx_path, site_dir="docs", history_path=None):
     # ВАЖНО: отчёт строим ТОЛЬКО по дням <= anchor (до вчера включительно).
     # Сегодняшние (или более поздние) записи из файла исключаем из
     # истории, архива и индекса — в файле они остаются, но не публикуются.
-    days_pub = [d for d in res["days"] if cur_periods._d(d) <= anchor]
+    anchor_d = cur_periods._d(anchor) if isinstance(anchor, str) else anchor
+    days_pub = [d for d in res["days"] if cur_periods._d(d) <= anchor_d]
 
     # дневная история (для стрелок, среднего, индекса) — только дни <= anchor
     by_day_pub = {d: by_day[d] for d in days_pub}
