@@ -1,0 +1,17 @@
+[Unit]
+Description=CUR analytics Telegram bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cur
+WorkingDirectory=/opt/cur
+# Файл .env лежит рядом, в /opt/cur/bot/.env
+EnvironmentFile=/opt/cur/bot/.env
+ExecStart=/opt/cur/venv/bin/python /opt/cur/bot/cur_bot.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
