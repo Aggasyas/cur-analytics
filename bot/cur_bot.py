@@ -4,7 +4,7 @@
 Telegram-бот аналитики ЦУР г.о. Солнечногорск.
 
 Что делает:
-  • Принимает .xlsx (выгрузка тепловой карты ЦУР за сутки) как документ в чат.
+  • Принимает .xlsx (накопительная выгрузка обращений с начала года) как документ в чат.
   • Прогоняет конвейер build_all_cur.build_site():
         парсинг → метрики → история → HTML (сводка дня, аналитика, индекс).
   • Публикует папку docs/ на GitHub Pages (git push).
@@ -46,7 +46,6 @@ if PIPELINE_DIR not in sys.path:
     sys.path.insert(0, PIPELINE_DIR)
 
 import build_all_cur          # noqa: E402
-import metrics_cur as M       # noqa: E402
 
 from aiogram import Bot, Dispatcher, F             # noqa: E402
 from aiogram.filters import Command, CommandStart  # noqa: E402
@@ -55,7 +54,6 @@ from aiogram.types import Message                   # noqa: E402
 # ------------------------- КОНФИГ -------------------------
 BOT_TOKEN   = os.environ["BOT_TOKEN"]                        # от @BotFather
 SITE_DIR    = os.environ.get("SITE_DIR",    os.path.join(PIPELINE_DIR, "docs"))
-HISTORY     = os.environ.get("HISTORY",     os.path.join(PIPELINE_DIR, "cur_history.jsonl"))
 PAGES_URL   = os.environ.get("PAGES_URL",   "").rstrip("/")  # https://aggasyas.github.io/cur-analytics
 GIT_REPO    = os.environ.get("GIT_REPO_DIR", PIPELINE_DIR)   # корень git-репозитория
 
@@ -100,52 +98,23 @@ def url_index() -> str:
 
 
 def last_date():
-    hist = M.load_history(HISTORY)
-    dates = sorted(r["date"] for r in hist if r.get("date"))
-    return dates[-1] if dates else None
-
-
-def dynamics_text(date: str) -> str:
-    """Короткая динамика по ключевым показателям ЦУР."""
-    hist = M.load_history(HISTORY)
-    keys = ["total", "problems", "urgent", "own_admin", "own_region"]
-    cmp = M.compare(hist, date, keys=keys)
-    if not cmp:
-        return ""
-    lines = []
-    for k in keys:
-        row = cmp.get(k)
-        if not row:
-            continue
-        _, txt = M.verdict(row)
-        d1 = row.get("delta1")
-        arrow = "•"
-        if d1 is not None:
-            arrow = "▲" if d1 > 0 else ("▼" if d1 < 0 else "▪")
-        lines.append(f"{arrow} {row['label']}: {row['value']} ({txt})")
-    return "\n".join(lines)
-
-
-def crit_text(date: str) -> str:
-    """Критичные темы за день одной строкой."""
-    hist = M.load_history(HISTORY)
-    rec = next((r for r in hist if r.get("date") == date), None)
-    if not rec:
-        return ""
-    parts = []
-    for k, lbl in [("crit_roads", "Дороги"), ("crit_garbage", "Мусор/КП"),
-                   ("crit_territory", "Территория"), ("crit_dip", "ДИП"),
-                   ("crit_hogweed", "Борщевик")]:
-        parts.append(f"{lbl} {rec.get(k, 0)}")
-    return " · ".join(parts)
+    """Последняя собранная дата — по файлам analytics-*.html в docs/."""
+    try:
+        dates = []
+        for fn in os.listdir(SITE_DIR):
+            m = re.match(r"analytics-(\d{4}-\d{2}-\d{2})\.html$", fn)
+            if m:
+                dates.append(m.group(1))
+        return sorted(dates)[-1] if dates else None
+    except FileNotFoundError:
+        return None
 
 
 def git_publish(commit_msg: str):
-    """Коммитим docs/ + историю и пушим. (успех, текст)."""
+    """Коммитим docs/ и пушим. (успех, текст)."""
     try:
         site_rel = os.path.relpath(SITE_DIR, GIT_REPO)
-        hist_rel = os.path.relpath(HISTORY, GIT_REPO)
-        subprocess.run(["git", "-C", GIT_REPO, "add", site_rel, hist_rel],
+        subprocess.run(["git", "-C", GIT_REPO, "add", site_rel],
                        check=True, capture_output=True, text=True)
         diff = subprocess.run(["git", "-C", GIT_REPO, "diff", "--cached", "--quiet"])
         if diff.returncode == 0:
@@ -178,9 +147,9 @@ async def cmd_help(msg: Message):
         return
     await msg.answer(
         "🟢 <b>Бот аналитики ЦУР</b>\n\n"
-        "Пришлите мне выгрузку <b>.xlsx</b> из тепловой карты ЦУР за сутки — "
-        "я соберу аналитику настроений жителей, обновлю динамику и опубликую "
-        "в интернете, а в ответ дам ссылку.\n\n"
+        "Пришлите накопительную выгрузку <b>.xlsx</b> (обращения с начала года) — "
+        "я соберу аналитику настроений жителей (периоды, исполнение, горячие точки) "
+        "и опубликую в интернете, а в ответ дам ссылку.\n\n"
         "<b>Команды:</b>\n"
         "/last — последняя сводка + аналитика + динамика\n"
         "/svodka ГГГГ-ММ-ДД — сводка за конкретный день\n"
@@ -197,15 +166,11 @@ async def cmd_last(msg: Message):
     if not d:
         await msg.answer("Истории пока нет — пришлите первую выгрузку .xlsx.")
         return
-    dyn = dynamics_text(d)
-    crit = crit_text(d)
     await msg.answer(
-        f"📄 <b>Последняя сводка ЦУР за {d}</b>\n"
+        f"📄 <b>Последняя аналитика ЦУР за {d}</b>\n"
         f"{url_svodka(d)}\n\n"
-        f"📊 Аналитика: {url_analytics(d)}\n"
-        f"🗂 Все сводки: {url_index()}\n\n"
-        + (f"<b>Критичные темы:</b>\n{crit}\n\n" if crit else "")
-        + (f"<b>Динамика к вчера:</b>\n{dyn}" if dyn else ""),
+        f"📊 Аналитика (периоды, исполнение, горячие точки): {url_analytics(d)}\n"
+        f"🗂 Все сводки: {url_index()}",
         parse_mode="HTML",
         disable_web_page_preview=True,
     )
@@ -225,9 +190,8 @@ async def cmd_svodka(msg: Message):
     except ValueError:
         await msg.answer("Формат: ГГГГ-ММ-ДД, например <code>/svodka 2026-06-02</code>", parse_mode="HTML")
         return
-    hist = M.load_history(HISTORY)
-    if not any(r.get("date") == date for r in hist):
-        await msg.answer(f"За {date} сводки в истории нет.")
+    if not os.path.exists(os.path.join(SITE_DIR, f"cur-{date}.html")):
+        await msg.answer(f"За {date} сводки нет (пришлите выгрузку, охватывающую эту дату).")
         return
     await msg.answer(
         f"📄 Сводка ЦУР за {date}:\n{url_svodka(date)}\n"
@@ -269,7 +233,7 @@ async def on_document(msg: Message):
             await msg.answer("⛔ Доступ запрещён.")
             return
         if not name.lower().endswith(".xlsx"):
-            await msg.answer("Нужна выгрузка <b>.xlsx</b> из тепловой карты ЦУР.", parse_mode="HTML")
+            await msg.answer("Нужна накопительная выгрузка <b>.xlsx</b> обращений ЦУР.", parse_mode="HTML")
             return
     else:
         if not group_allowed(msg):
@@ -302,34 +266,29 @@ async def on_document(msg: Message):
     # 2. конвейер сборки (в отдельном потоке)
     try:
         res = await asyncio.to_thread(
-            build_all_cur.build_site, local_path, SITE_DIR, HISTORY
+            build_all_cur.build_site, local_path, SITE_DIR
         )
     except Exception as e:
         log.exception("build_site failed")
         await _set(status, report, f"❌ Ошибка сборки: {e}")
         return
 
-    date = res["date"]
+    date = res["anchor"]
 
     # 3. публикация
     await _set(status, report, f"✅ Собрал аналитику за {date}. Публикую…")
     ok, pub = await asyncio.to_thread(git_publish, f"Аналитика ЦУР за {date}")
 
     # 4. ответ
-    dyn = dynamics_text(date)
-    crit = crit_text(date)
     head = "🟢 Опубликовано" if ok else "⚠️ Собрано, но публикация не удалась"
     body = (
         f"{head} — аналитика ЦУР за <b>{date}</b>\n"
         f"📄 {url_svodka(date)}\n"
         f"📊 {url_analytics(date)}\n"
         f"🗂 {url_index()}\n"
-        f"📚 Дней в истории: {res['days_in_history']}\n"
+        f"📈 Всего за день: {res.get('total', 0)} · срочных: {res.get('urgent', 0)}\n"
+        f"📚 Дней в архиве: {res.get('days_written', 0)}\n"
     )
-    if crit:
-        body += f"\n<b>Критичные темы:</b>\n{crit}\n"
-    if dyn:
-        body += f"\n<b>Динамика к вчера:</b>\n{dyn}"
     if not ok:
         body += f"\n\n<code>{pub}</code>"
 
@@ -349,8 +308,8 @@ async def _set(status, report, text: str):
 
 
 async def main():
-    log.info("Бот ЦУР запускается. Pages: %s | site: %s | history: %s",
-             PAGES_URL or "(не задан)", SITE_DIR, HISTORY)
+    log.info("Бот ЦУР (Telegram) запускается. Pages: %s | site: %s",
+             PAGES_URL or "(не задан)", SITE_DIR)
     await dp.start_polling(bot)
 
 
