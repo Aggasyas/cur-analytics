@@ -82,6 +82,13 @@ def extract_metrics_cur(data):
         matched_total += c
     total_src = sum(src_counts.values())
     m["src_other"] = max(0, total_src - matched_total)
+    # --- исполнение ---
+    ex = data.get("execution", {})
+    m["exec_closed"] = ex.get("closed", 0)
+    m["exec_in_work"] = ex.get("in_work", 0)
+    m["exec_returned"] = ex.get("returned", 0)
+    m["exec_deferred"] = ex.get("deferred", 0)
+    m["exec_closed_share"] = ex.get("closed_share", 0)
     return m
 
 

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Сводка ЦУР · 2 апреля 2026</title>
+<style>
+:root {
+  --bg:#f4f6f9; --card:#ffffff; --ink:#1a2230; --muted:#6b7686;
+  --line:#e3e8ef; --brand:#15507a; --brand-soft:#e8f1f8;
+  --red:#c0392b; --amber:#c77700; --green:#1f7a4d; --blue:#15507a;
+  --reg:#8e44ad;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial,sans-serif;
+  font-size:15px; line-height:1.55; }
+.wrap { max-width:980px; margin:0 auto; padding:20px 16px 64px; }
+header.doc { background:linear-gradient(135deg,#15507a,#1d6ea3); color:#fff;
+  border-radius:14px; padding:22px 26px; box-shadow:0 6px 20px rgba(21,80,122,.2); }
+header.doc .org { font-size:13px; opacity:.92; }
+header.doc h1 { margin:8px 0 4px; font-size:23px; }
+header.doc .period { font-size:15px; opacity:.95; }
+header.doc .asof { font-size:13px; opacity:.85; margin-top:4px; }
+nav.page-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 2px; }
+nav.page-tabs a { font-size:13.5px; font-weight:600; text-decoration:none;
+  padding:8px 16px; border-radius:10px; border:1px solid var(--line);
+  background:var(--card); color:var(--brand); }
+nav.page-tabs a.active { background:var(--brand); color:#fff; border-color:var(--brand); }
+nav.page-tabs a:hover { background:#dbe7f7; }
+nav.page-tabs a.active:hover { background:var(--brand); }
+.metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:18px 0 6px; }
+.metric { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+.metric .v { font-size:26px; font-weight:700; line-height:1.1; }
+.metric .l { font-size:12.5px; color:var(--muted); margin-top:6px; }
+.metric .m-sub { font-size:11.5px; margin-top:3px; }
+.metric.red .v { color:var(--red); } .metric.blue .v { color:var(--blue); }
+.metric.green .v { color:var(--green); } .metric.amber .v { color:var(--amber); }
+.dy { font-size:14px; font-weight:700; }
+.dy-bad { color:var(--red); } .dy-good { color:var(--green); } .dy-flat { color:var(--muted); }
+.avg { font-size:11.5px; font-weight:600; }
+.av-bad { color:var(--red); } .av-good { color:var(--green); } .av-flat { color:var(--muted); }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:18px 20px; margin-top:16px; }
+.card h2 { margin:0 0 14px; font-size:17px; color:var(--brand); }
+.src-note { font-size:12px; color:var(--muted); margin-top:12px; font-style:italic; }
+/* источники */
+.src-list { display:flex; flex-direction:column; gap:9px; }
+.src-row { display:grid; grid-template-columns:120px 1fr auto; align-items:center; gap:12px; }
+.src-name { font-weight:600; font-size:14px; }
+.src-bar { height:9px; background:#eef2f7; border-radius:6px; overflow:hidden; }
+.src-fill { display:block; height:100%; background:var(--brand); border-radius:6px; }
+.src-val { font-size:14px; font-weight:700; white-space:nowrap; }
+.src-pct { color:var(--muted); font-weight:600; font-size:12.5px; }
+/* зона ответственности */
+.own-bar { display:flex; height:30px; border-radius:9px; overflow:hidden; margin-bottom:14px; }
+.own-seg { display:flex; align-items:center; justify-content:center; color:#fff;
+  font-weight:700; font-size:13px; min-width:34px; }
+.own-adm { background:var(--brand); } .own-reg { background:var(--reg); }
+.own-legend { display:flex; flex-direction:column; gap:7px; }
+.own-li { font-size:14px; } .own-li b { font-size:15px; }
+.dot { display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:7px; vertical-align:baseline; }
+.dot.adm { background:var(--brand); } .dot.reg { background:var(--reg); } .dot.non { background:var(--muted); }
+.own-det { list-style:none; padding:6px 0 0; margin:0; }
+.own-det li { display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid var(--line); font-size:13.5px; }
+.own-det li b { color:var(--brand); }
+/* критичные */
+.crit-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.crit-card { border:1px solid var(--line); border-left:5px solid var(--muted);
+  border-radius:11px; padding:13px 15px; background:#fbfcfe; }
+.crit-card.crit-up { border-left-color:var(--red); }
+.crit-card.crit-down { border-left-color:var(--green); }
+.crit-card.crit-flat { border-left-color:var(--muted); }
+.crit-top { display:flex; align-items:center; gap:8px; }
+.crit-ic { font-size:18px; }
+.crit-title { font-weight:600; font-size:13.5px; }
+.crit-num { font-size:26px; font-weight:800; margin-top:6px; }
+.crit-avg { min-height:15px; margin-top:2px; }
+.crit-subs { font-size:11.5px; color:var(--muted); margin-top:8px; line-height:1.5; }
+.crit-subs b { color:var(--ink); }
+/* топ-бары */
+.bars { display:flex; flex-direction:column; gap:9px; }
+.bar-row { display:grid; grid-template-columns:190px 1fr auto; align-items:center; gap:12px; }
+.bar-name { font-size:13.5px; font-weight:600; }
+.bar-track { height:12px; background:#eef2f7; border-radius:7px; overflow:hidden; }
+.bar-fill { height:100%; background:linear-gradient(90deg,#1d6ea3,#15507a); border-radius:7px; }
+.bar-val { font-weight:700; font-size:14px; }
+/* что изменилось */
+.changes { background:var(--card); border:1px solid var(--line); border-radius:14px;
+  padding:16px 20px; margin-top:16px; }
+.ch-h { font-weight:700; color:var(--brand); font-size:16px; margin-bottom:8px; }
+.ch-sub { font-size:12px; color:var(--muted); font-weight:500; }
+.ch-list { margin:0; padding-left:2px; list-style:none; }
+.ch-list li { font-size:14px; padding:5px 0; border-bottom:1px dashed var(--line); }
+.ch-bad { color:var(--red); font-weight:600; }
+.ch-good { color:var(--green); font-weight:600; }
+.ch-empty { font-size:13.5px; color:var(--muted); }
+/* срочное */
+.urgent-alert { background:#fdecea; border:1px solid #f0b6ae; border-left:6px solid var(--red);
+  border-radius:13px; padding:14px 18px; margin-top:16px; }
+.ug-top { display:flex; align-items:center; gap:10px; }
+.ug-ic { flex:0 0 auto; width:24px; height:24px; background:var(--red); color:#fff;
+  border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; }
+.ug-h { font-weight:800; font-size:15.5px; color:var(--red); }
+.ug-badge { margin-left:auto; background:var(--red); color:#fff; font-weight:700;
+  font-size:12.5px; padding:3px 11px; border-radius:20px; }
+.ug-chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:11px; }
+.ug-chip { background:#fff; border:1px solid #f0b6ae; border-radius:8px; padding:4px 10px; font-size:13px; }
+.ug-chip b { color:var(--red); }
+.ug-note { font-size:12px; color:#9a5249; margin-top:10px; font-style:italic; }
+/* caret */
+.det { margin-top:8px; }
+.det > summary { cursor:pointer; list-style:none; font-weight:600; font-size:13.5px;
+  color:var(--brand); display:flex; align-items:center; gap:8px; padding:4px 0; }
+.det > summary::-webkit-details-marker { display:none; }
+.det-caret { display:inline-block; flex:0 0 auto; width:8px; height:8px;
+  border-right:2px solid var(--brand); border-bottom:2px solid var(--brand);
+  transform:rotate(-45deg); transition:transform .15s; margin-top:-3px; }
+details.det[open] > summary .det-caret { transform:rotate(45deg); margin-top:-4px; }
+footer.foot { margin-top:28px; font-size:12px; color:var(--muted); text-align:center; }
+@media (max-width:680px) {
+  .metrics { grid-template-columns:repeat(2,1fr); }
+  .crit-grid { grid-template-columns:1fr 1fr; }
+  .bar-row { grid-template-columns:120px 1fr auto; }
+  .src-row { grid-template-columns:90px 1fr auto; }
+}
+</style></head><body><div class="wrap">
+<header class="doc">
+  <div class="org">Центр управления регионом · г.о. Солнечногорск</div>
+  <h1>Аналитика обращений ЦУР</h1>
+  <div class="period">Настроения жителей за 2 апреля 2026</div>
+  <div class="asof">Источник: тепловая карта ЦУР</div>
+</header>
+<nav class="page-tabs">
+  <a href="index.html">🗂 Все сводки</a>
+  <a class="active" href="cur-2026-04-02.html">📄 Сводка за день</a>
+  <a href="analytics-2026-06-03.html">📊 Аналитика и динамика</a>
+</nav>
+
+<div class="metrics">
+  <div class="metric blue"><div class="v">188 <span class="dy dy-bad">▲ +57</span></div><div class="l">Всего обращений за сутки</div><div class="m-sub"><span class="avg av-bad">ср.7дн: +19.1</span></div></div>
+  <div class="metric amber"><div class="v">160</div><div class="l">Проблемы</div></div>
+  <div class="metric green"><div class="v">28</div><div class="l">Предложения</div></div>
+  <div class="metric red"><div class="v">41</div><div class="l">Аварии и инциденты</div></div>
+</div><div class="urgent-alert"><div class="ug-top"><span class="ug-ic">!</span><span class="ug-h">Срочное: аварии и инциденты</span><span class="ug-badge">41 авария/инцидент</span></div><div class="ug-chips"><span class="ug-chip">Общественные территории <b>12</b></span><span class="ug-chip">Двор <b>8</b></span><span class="ug-chip">Дороги <b>5</b></span><span class="ug-chip">Природа, экология <b>5</b></span><span class="ug-chip">Отопление/ГВС <b>4</b></span><span class="ug-chip">Социальная сфера <b>2</b></span><span class="ug-chip">Строительство <b>2</b></span><span class="ug-chip">Не определено <b>1</b></span></div><div class="ug-note">Аварийные ситуации, инциденты и обращения, требующие немедленной реакции.</div></div><section class="card"><h2>Критичные темы</h2><div class="crit-grid"><div class="crit-card crit-up"><div class="crit-top"><span class="crit-ic">🚧</span><span class="crit-title">Дороги</span></div><div class="crit-num">51 <span class="dy dy-bad">▲ +14</span></div><div class="crit-avg"><span class="avg av-bad">ср.7дн: +17.9</span></div><div class="crit-subs">Ямы и ремонт картами <b>20</b> · Ремонт покрытия дороги <b>8</b> · Мусор на дорогах <b>5</b> · Строительство объектов недвижимости <b>2</b></div></div><div class="crit-card crit-flat"><div class="crit-top"><span class="crit-ic">🗑</span><span class="crit-title">Мусор и контейнеры</span></div><div class="crit-num">27 <span class="dy dy-flat">→ 0</span></div><div class="crit-avg"><span class="avg av-good">ср.7дн: -40.6</span></div><div class="crit-subs">Мусор <b>10</b> · Мусор на дорогах <b>5</b> · Полигон ТКО <b>3</b> · Содержание КП (уборка) <b>2</b></div></div><div class="crit-card crit-up"><div class="crit-top"><span class="crit-ic">🌳</span><span class="crit-title">Содержание территории</span></div><div class="crit-num">39 <span class="dy dy-bad">▲ +15</span></div><div class="crit-avg"><span class="avg av-bad">ср.7дн: +9.9</span></div><div class="crit-subs">Мусор <b>10</b> · Благоустройство дворов <b>8</b> · Ремонт тротуаров, проездов, пешеходных дорожек <b>6</b> · Благоустройство общественных территорий <b>4</b></div></div><div class="crit-card crit-down"><div class="crit-top"><span class="crit-ic">🛝</span><span class="crit-title">Детские площадки (ДИП)</span></div><div class="crit-num">9 <span class="dy dy-good">▼ -6</span></div><div class="crit-avg"><span class="avg av-good">ср.7дн: -0.1</span></div><div class="crit-subs">Благоустройство детских площадок (ДИП) <b>4</b> · Содержание КП (уборка) <b>2</b> · Навалы на КП <b>2</b> · Прием в детский сад <b>1</b></div></div><div class="crit-card crit-flat"><div class="crit-top"><span class="crit-ic">🌱</span><span class="crit-title">Борщевик</span></div><div class="crit-num">0 <span class="dy dy-flat">→ 0</span></div><div class="crit-avg"><span class="avg av-flat">ср.7дн: 0</span></div></div></div><div class="src-note">Темы под особым контролем. Показываются всегда, даже при нулевых значениях.</div></section><div class="changes"><div class="ch-h">Что изменилось <span class="ch-sub">(к среднему за 7 дней)</span></div><ul class="ch-list"><li class="ch-bad">↑ Аварии и инциденты +16.6 (+68% к норме)</li><li class="ch-good">↓ Мусор и контейнеры -40.6 (-60% к норме)</li><li class="ch-bad">↑ В администрацию округа +37.1 (+55% к норме)</li><li class="ch-bad">↑ В областные/иные структуры +18.3 (+54% к норме)</li><li class="ch-bad">↑ Дороги +17.9 (+54% к норме)</li><li class="ch-good">↑ Предложения +9 (+47% к норме)</li><li class="ch-bad">↑ Содержание территории +9.9 (+34% к норме)</li></ul></div><section class="card"><h2>Топ направлений за день</h2><div class="bars"><div class="bar-row"><div class="bar-name">Двор</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">45</div></div><div class="bar-row"><div class="bar-name">Дороги</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">45</div></div><div class="bar-row"><div class="bar-name">Общественные территории</div><div class="bar-track"><div class="bar-fill" style="width:47%"></div></div><div class="bar-val">21</div></div><div class="bar-row"><div class="bar-name">Социальная сфера</div><div class="bar-track"><div class="bar-fill" style="width:36%"></div></div><div class="bar-val">16</div></div><div class="bar-row"><div class="bar-name">Энергетика</div><div class="bar-track"><div class="bar-fill" style="width:31%"></div></div><div class="bar-val">14</div></div><div class="bar-row"><div class="bar-name">Природа, экология</div><div class="bar-track"><div class="bar-fill" style="width:20%"></div></div><div class="bar-val">9</div></div><div class="bar-row"><div class="bar-name">Общественный транспорт</div><div class="bar-track"><div class="bar-fill" style="width:16%"></div></div><div class="bar-val">7</div></div><div class="bar-row"><div class="bar-name">Отопление/ГВС</div><div class="bar-track"><div class="bar-fill" style="width:13%"></div></div><div class="bar-val">6</div></div></div></section><section class="card"><h2>Источники поступления</h2><div class="src-list"><div class="src-row"><span class="src-name">Добродел</span><span class="src-bar"><span class="src-fill" style="width:38%"></span></span><span class="src-val">72 <span class="src-pct">· 38%</span> <span class="dy dy-bad">▼ -1</span></span></div><div class="src-row"><span class="src-name">Инцидент</span><span class="src-bar"><span class="src-fill" style="width:16%"></span></span><span class="src-val">31 <span class="src-pct">· 16%</span> <span class="dy dy-good">▲ +4</span></span></div><div class="src-row"><span class="src-name">ОНФ</span><span class="src-bar"><span class="src-fill" style="width:3%"></span></span><span class="src-val">6 <span class="src-pct">· 3%</span> <span class="dy dy-good">▲ +2</span></span></div><div class="src-row"><span class="src-name">ПОС</span><span class="src-bar"><span class="src-fill" style="width:8%"></span></span><span class="src-val">15 <span class="src-pct">· 8%</span> <span class="dy dy-good">▲ +15</span></span></div><div class="src-row"><span class="src-name">ППМО</span><span class="src-bar"><span class="src-fill" style="width:9%"></span></span><span class="src-val">16 <span class="src-pct">· 9%</span> <span class="dy dy-good">▲ +7</span></span></div><div class="src-row"><span class="src-name">МСЭД</span><span class="src-bar"><span class="src-fill" style="width:21%"></span></span><span class="src-val">40 <span class="src-pct">· 21%</span> <span class="dy dy-good">▲ +25</span></span></div><div class="src-row"><span class="src-name">ЕДС</span><span class="src-bar"><span class="src-fill" style="width:1%"></span></span><span class="src-val">2 <span class="src-pct">· 1%</span> <span class="dy dy-good">▲ +2</span></span></div></div><div class="src-note">Откуда пришли обращения жителей за сутки.</div></section><section class="card"><h2>Зона ответственности</h2><div class="own-bar"><div class="own-seg own-adm" style="width:56%" title="Администрация округа">56%</div><div class="own-seg own-reg" style="width:28%" title="Область/иные">28%</div></div><div class="own-legend"><div class="own-li"><span class="dot adm"></span>Администрация округа — <b>105</b> <span class="dy dy-bad">▲ +46</span></div><div class="own-li"><span class="dot reg"></span>Областные/иные структуры — <b>52</b> <span class="dy dy-bad">▲ +8</span></div><div class="own-li"><span class="dot non"></span>Без управления — <b>31</b></div></div><details class="det"><summary><span class="det-caret"></span>Областные/иные структуры — детально (6)</summary><ul class="own-det"><li><span>Истринское РУАД</span><b>13</b></li><li><span>Солнечногорская больница</span><b>12</b></li><li><span>Министерство по содержанию территорий и государственному жилищному надзору Московской области</span><b>4</b></li><li><span>МТДИ УРАТК</span><b>2</b></li><li><span>Комитет лесного хозяйства Московской области</span><b>2</b></li><li><span>МТДИ  Автомобильный транспорт</span><b>2</b></li></ul></details><div class="src-note">Куда направлены обращения для исполнения.</div></section><footer class="foot">Сформировано автоматически из выгрузки тепловой карты ЦУР · nr-01.01.26-03.06.2026.xlsx<br>Персональные данные заявителей не публикуются.</footer></div></body></html>

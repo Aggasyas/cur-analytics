@@ -3,3 +3,5 @@ __pycache__/
 .env
 venv/
 *.xlsx
+_*.png
+cur_history.jsonl

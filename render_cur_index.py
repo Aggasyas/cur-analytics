@@ -65,10 +65,12 @@ def day_verdict(history, date):
     return "neutral", True
 
 
-def build(history):
+def build(history, analytics_date=None):
     history = [r for r in history if r.get("date")]
     rows = sorted(history, key=lambda r: r["date"], reverse=True)
     latest = rows[0]["date"] if rows else ""
+    # Страница аналитики с периодами одна (для anchor-дня); все ссылки «Аналитика» ведут на неё.
+    an_date = analytics_date or latest
 
     P = [f"""<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -147,7 +149,7 @@ details.mo>summary::-webkit-details-marker{{display:none}}
 </div>
 <div class="links">
 <a class="primary" href="cur-{esc(d)}.html">Сводка</a>
-<a href="analytics-{esc(d)}.html">Аналитика</a>
+<a href="analytics-{esc(an_date)}.html">Аналитика</a>
 </div>
 </div>"""
 

@@ -381,8 +381,9 @@ footer.foot { margin-top:28px; font-size:12px; color:var(--muted); text-align:ce
 """
 
 
-def build(data, history=None):
+def build(data, history=None, analytics_date=None):
     date = data.get("meta", {}).get("date", "")
+    an_date = analytics_date or date
     # метрики + сравнение
     cmp_all = {}
     if history:
@@ -402,7 +403,7 @@ def build(data, history=None):
 <nav class="page-tabs">
   <a href="index.html">🗂 Все сводки</a>
   <a class="active" href="cur-{esc(date)}.html">📄 Сводка за день</a>
-  <a href="analytics-{esc(date)}.html">📊 Аналитика и динамика</a>
+  <a href="analytics-{esc(an_date)}.html">📊 Аналитика и динамика</a>
 </nav>
 """]
     parts.append(build_kpi(data, cmp_all))
