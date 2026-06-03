@@ -432,7 +432,7 @@ footer.foot {{ margin-top:28px; font-size:12px; color:var(--muted); text-align:c
 <header class="doc">
   <div class="org">Центр управления регионом · г.о. Солнечногорск</div>
   <h1>Аналитика и динамика</h1>
-  <div class="period">по состоянию на {esc(ru_date(target_date))} · дней в истории: {days}</div>
+  <div class="period">отчётный день: {esc(ru_date(target_date))} · дней в истории: {days}</div>
 </header>
 <nav class="page-tabs">
   <a href="index.html">🗂 Все сводки</a>
